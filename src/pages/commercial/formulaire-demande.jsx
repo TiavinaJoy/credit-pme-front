@@ -13,6 +13,7 @@ import {
     Typography,
     Grid,
 } from '@mui/material';
+import { width } from '@mui/system';
 
 // Schéma de validation avec Yup
 const validationSchema = Yup.object({
@@ -24,7 +25,12 @@ const validationSchema = Yup.object({
         .required('Le montant est requis'),
     duree: Yup.string().required('La durée est requise'),
     motif: Yup.string().required('Le motif est requis'),
-    image: Yup.mixed()
+    image_CIN_recto: Yup.mixed()
+        .required('Une image est requise')
+        .test('fileFormat', 'Format d’image non valide', (value) => {
+            return value && ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
+        }),
+    image_CIN_verso: Yup.mixed()
         .required('Une image est requise')
         .test('fileFormat', 'Format d’image non valide', (value) => {
             return value && ['image/jpeg', 'image/png', 'image/jpg'].includes(value.type);
@@ -48,7 +54,8 @@ const FormulaireDemande = () => {
                 montant: '',
                 duree: '',
                 motif: '',
-                image: null,
+                image_CIN_recto: null,
+                image_CIN_verso: null,
                 document: null,
             }}
             validationSchema={validationSchema}
@@ -64,7 +71,7 @@ const FormulaireDemande = () => {
             {({ values, handleChange, setFieldValue, errors, touched }) => (
                 <Form>
 
-                    <Grid container spacing={1}>
+                    <Grid container spacing={1} paddingTop={1}>
                         <Grid item sx={semiLage} >
                             <TextField
                                 fullWidth
@@ -87,11 +94,13 @@ const FormulaireDemande = () => {
                                 helperText={touched.prenom && errors.prenom}
                             />
                         </Grid>
-                        <Grid item xs={semiLage}>
+                    </Grid>
+                    <Grid container spacing={1} paddingTop={1}>
+                        <Grid item sx={semiLage}>
                             <TextField
                                 fullWidth
                                 name="montant"
-                                label="Montant demandé (€)"
+                                label="Montant demandé (Ariary)"
                                 value={values.montant}
                                 onChange={handleChange}
                                 error={touched.montant && Boolean(errors.montant)}
@@ -99,65 +108,70 @@ const FormulaireDemande = () => {
                                 type="number"
                             />
                         </Grid>
-                    </Grid>
-                    <Box display="flex" flexDirection="column" gap={3} width="100%">
-
-                        {/* Nom */}
-
-
-                        {/* Prénom */}
-
-
-                        {/* Montant */}
-
-
-                        {/* Durée */}
-                        <FormControl fullWidth error={touched.duree && Boolean(errors.duree)}>
-                            <InputLabel>Durée</InputLabel>
-                            <Select
+                        <Grid item sx={semiLage}>
+                            <TextField
+                                fullWidth
                                 name="duree"
+                                label="Maturité du crédit"
                                 value={values.duree}
                                 onChange={handleChange}
-                                label="Durée"
-                            >
-                                <MenuItem value={12}>12 mois</MenuItem>
-                                <MenuItem value={24}>24 mois</MenuItem>
-                                <MenuItem value={36}>36 mois</MenuItem>
-                            </Select>
-                            <FormHelperText>{touched.duree && errors.duree}</FormHelperText>
-                        </FormControl>
+                                error={touched.duree && Boolean(errors.duree)}
+                                helperText={touched.duree && errors.duree}
+                                type="number"
+                            />
+                        </Grid>
+                    </Grid>
 
-                        {/* Motif */}
-                        <TextField
-                            fullWidth
-                            name="motif"
-                            label="Motif de la demande"
-                            value={values.motif}
-                            onChange={handleChange}
-                            error={touched.motif && Boolean(errors.motif)}
-                            helperText={touched.motif && errors.motif}
-                            multiline
-                            rows={3}
-                        />
+                    <Grid container spacing={1} paddingTop={1}>
+                        <Grid item width={'100%'}> 
+                            <TextField
+                                fullWidth
+                                name="motif"
+                                label="Motif de la demande"
+                                value={values.motif}
+                                onChange={handleChange}
+                                error={touched.motif && Boolean(errors.motif)}
+                                helperText={touched.motif && errors.motif}
+                                multiline
+                                rows={3}
+                            />
+                        </Grid>
 
-                        {/* Champ Image */}
-                        <Box>
-                            <Typography variant="subtitle1">Image du client (JPEG/PNG)</Typography>
+                    </Grid>
+                    {/* Motif */}
+
+
+                    {/* Champ Image */}
+                    <Grid container gap={1}>
+                        <Grid xs='40'>
+                            <Typography variant="subtitle1">Image du CIN Recto (JPEG/PNG)</Typography>
                             <input
-                                name="image"
+                                name="image_CIN_recto"
                                 type="file"
                                 accept="image/jpeg,image/png"
                                 onChange={(event) => {
                                     setFieldValue('image', event.currentTarget.files[0]);
                                 }}
                             />
-                            {touched.image && errors.image && (
-                                <FormHelperText error>{errors.image}</FormHelperText>
+                            {touched.image_CIN_recto && errors.image_CIN_recto && (
+                                <FormHelperText error>{errors.image_CIN_recto}</FormHelperText>
                             )}
-                        </Box>
-
-                        {/* Champ Document */}
-                        <Box>
+                        </Grid>
+                        <Grid xs='40'>
+                            <Typography variant="subtitle1">Image du CIN Verso (JPEG/PNG)</Typography>
+                            <input
+                                name="image_CIN_verso"
+                                type="file"
+                                accept="image/jpeg,image/png"
+                                onChange={(event) => {
+                                    setFieldValue('image', event.currentTarget.files[0]);
+                                }}
+                            />
+                            {touched.image_CIN_verso && errors.image_CIN_verso && (
+                                <FormHelperText error>{errors.image_CIN_verso}</FormHelperText>
+                            )}
+                        </Grid>
+                        <Grid xs='40px'>
                             <Typography variant="subtitle1">Autre document</Typography>
                             <input
                                 name="document"
@@ -169,13 +183,18 @@ const FormulaireDemande = () => {
                             {touched.document && errors.document && (
                                 <FormHelperText error>{errors.document}</FormHelperText>
                             )}
-                        </Box>
-
-                        {/* Bouton */}
-                        <Button type="submit" variant="contained" color="primary">
-                            Envoyer la demande
-                        </Button>
-                    </Box>
+                        </Grid>
+                    </Grid>
+                    {/* Bouton */}
+                    <Button type="submit" variant="contained" color="primary" sx={{
+                        width: {
+                            xs: '500%',   // pour < 600px
+                            sm: '45%',    // pour ≥ 600px
+                            md: '45%',    // pour ≥ 900px
+                        }
+                    }}>
+                        Envoyer la demande
+                    </Button>
                 </Form>
             )}
         </Formik>
