@@ -4,19 +4,19 @@ const icons = {
     PlusOutlined
 }
 
-const formulaire = {
-    id: 'Forms',
-    title: 'Forms',
+const list = {
+    id: 'Lists',
+    title: 'Lists',
     type: 'group',
     children: [
         {
-            id: 'add-form',
-            title: 'Nouvelle demande',
+            id: 'recipe-list',
+            title: 'Recipes',
             type: 'item',
-            url: '/formulaire-demande',
+            url: '/recipes',
             icon: icons.PlusOutlined
         },
     ]
 };
 
-export default formulaire;
+export default list;
